@@ -1,0 +1,129 @@
+---
+const messages = [
+  { title: 'Computer Science Engineer', text: 'Vigneshwararaj Sathianarayanan. M.Sc. student in AI and machine learning at Linköping University.' },
+  { title: 'Engineer first', text: 'Two years building backend systems at NielsenIQ. One engine I built cut ticket resolution from 2 days to real time.' },
+  { title: 'I read hard signals', text: 'Machine sensors. WiFi waves. Ancient Tamil carved in stone.' },
+  { title: '1st prize, Global Hackfest', text: "Innovation Award at NielsenIQ's Global Hackfest, 2024." },
+  { title: 'Looking for a thesis', text: "A master's thesis in AI or ML, from January 2027. Let's talk." },
+];
+
+// A sharper V than the font's: same slant and edges, but the strokes meet in a point.
+const vee = 'M231 85 L412 0 L352 400 L524 1 L640 160 L262 804 L126 861 Z';
+const edges = Array.from({ length: 16 }, (_, n) => {
+  const i = 16 - n;
+  const fill = i >= 13 ? 'var(--red-dark)' : i >= 9 ? 'var(--red)' : i >= 5 ? 'var(--teal-dark)' : 'var(--teal)';
+  return { x: -4.5 * i, y: 11 * i, fill };
+});
+---
+<section class="hero" aria-labelledby="hero-title">
+  <div class="stage">
+    <canvas id="frame" class="layer" width="1000" height="1250" role="img" aria-label="Vigneshwararaj smiling in a street, turning as the camera swings around him"></canvas>
+    <noscript><img class="layer" style="object-fit:cover" src="/hero/frames/0001.webp" alt="Vigneshwararaj smiling in a street" width="1000" height="1250" /></noscript>
+    <div class="stage-fade"></div>
+    <canvas id="cut" class="layer" width="1000" height="1250" aria-hidden="true"></canvas>
+    <h1 id="hero-title" class="name" data-text="Vigneshwararaj"><span class="vt">V</span><svg class="vee" viewBox="0 0 641 861" aria-hidden="true"><defs><path id="vee" d={vee} /></defs>{edges.map((e) => <use href="#vee" x={e.x} y={e.y} fill={e.fill} />)}<use href="#vee" x="-2" y="4" fill="#1c1405" /><use href="#vee" fill="var(--yellow)" /><path d="M322 495 L250 670" stroke="var(--teal)" stroke-width="7" fill="none" /><circle cx="322" cy="495" r="20" fill="var(--teal)" /></svg>igneshwararaj</h1>
+    <div class="side">
+      {messages.map((m, i) => (
+        <div class:list={['say', { on: i === 0 }]}><h2>{m.title}</h2><p>{m.text}</p></div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import Lenis from 'lenis';
+
+  const hero = document.querySelector<HTMLElement>('.hero')!;
+  const name = document.querySelector<HTMLElement>('.name')!;
+  const frameCtx = (document.getElementById('frame') as HTMLCanvasElement).getContext('2d')!;
+  const cutCtx = (document.getElementById('cut') as HTMLCanvasElement).getContext('2d')!;
+  const says = [...document.querySelectorAll<HTMLElement>('.say')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const touch = matchMedia('(pointer: coarse)').matches;
+  if (touch) hero.classList.add('touch');
+
+  // Phones get every second frame, which halves the download.
+  const COUNT = 120;
+  const stride = touch ? 2 : 1;
+  const file = (dir: string, i: number) => `/hero/${dir}/${String(i + 1).padStart(4, '0')}.webp`;
+  const frames: HTMLImageElement[] = [];
+  const cuts: HTMLImageElement[] = [];
+  // With reduced motion only the first frame is ever shown.
+  const total = reduced ? 1 : COUNT;
+  for (let i = 0; i < total; i += stride) {
+    const a = new Image(); a.src = file('frames', i); frames.push(a);
+    const b = new Image(); b.src = file('cutouts', i); cuts.push(b);
+  }
+
+  let current = -1;
+  function draw(i: number) {
+    let n = Math.min(i, frames.length - 1);
+    while (n > 0 && !(frames[n].complete && cuts[n].complete)) n--;
+    if (n === current || !(frames[n].complete && cuts[n].complete)) return;
+    current = n;
+    frameCtx.drawImage(frames[n], 0, 0, 1000, 1250);
+    cutCtx.clearRect(0, 0, 1000, 1250);
+    cutCtx.drawImage(cuts[n], 0, 0);
+    hero.dataset.frame = String(n * stride);
+  }
+  Promise.all([frames[0].decode(), cuts[0].decode()]).catch(() => {}).then(() => { current = -1; draw(0); });
+
+  // Fit the name to the page width, whatever the font's real width is.
+  function fit() {
+    name.style.fontSize = '100px';
+    const margin = parseFloat(getComputedStyle(document.querySelector('.nav')!).paddingLeft);
+    name.style.fontSize = ((document.documentElement.clientWidth - 2 * margin - 12) / (name.scrollWidth / 100)) + 'px';
+  }
+  document.fonts.load('40px Rovelink').catch(() => {}).then(() => document.fonts.ready).then(fit);
+  addEventListener('resize', fit);
+
+  // Glitch bursts: every few seconds, on each message change, and on hover.
+  function glitch() {
+    if (reduced) return;
+    name.classList.remove('glitch');
+    void name.offsetWidth; // restart the animation if one is already running
+    name.classList.add('glitch');
+  }
+  name.addEventListener('animationend', (e) => { if (e.animationName === 'name-jolt') name.classList.remove('glitch'); });
+  name.addEventListener('pointerenter', glitch);
+  if (!reduced) (function schedule() { setTimeout(() => { glitch(); schedule(); }, 2600 + Math.random() * 2800); })();
+
+  // One wheel notch moves one message. Touch swipes travel further, so they get a longer step.
+  let shown = 0;
+  function show(n: number) {
+    if (n === shown) return;
+    says[shown].classList.remove('on');
+    says[n].classList.add('on');
+    if (!reduced) gsap.fromTo(says[n].children, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: .32, stagger: .05, ease: 'power3.out', overwrite: true });
+    shown = n;
+    hero.dataset.message = String(n);
+    glitch();
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  if (!reduced) {
+    const lenis = new Lenis();
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    // Keep in-page links working through the smooth scroller.
+    document.querySelectorAll<HTMLAnchorElement>('a[href*="#"]').forEach((a) => {
+      const url = new URL(a.href);
+      if (url.pathname !== location.pathname || !url.hash) return;
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        lenis.scrollTo(url.hash, { offset: -64 });
+      });
+    });
+  }
+  const step = () => parseFloat(getComputedStyle(hero).getPropertyValue('--step'));
+  ScrollTrigger.create({
+    trigger: hero, start: 'top top', end: 'bottom bottom',
+    onUpdate(self) {
+      if (!reduced) draw(Math.round(self.progress * (COUNT - 1) / stride));
+      show(Math.min(says.length - 1, Math.floor((scrollY + 8) / step())));
+    },
+  });
+</script>

@@ -1,0 +1,33 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# local tool output
+.taste-skill/
+.playwright-cli/
+.playwright/
+assets/
+
+# AI tooling installed locally (not part of the site)
+.agents/
+.claude/
+.codex/
+skills-lock.json
+
+# editor and OS
+.DS_Store
+Thumbs.db
+.vscode/
+
+# old single-page site, kept locally
+archive/
+
+# source photos and throwaway tests
+photos/
+spike/
+
+# Rovelink demo is personal-use only: never publish it. Remove this line after buying a licence.
+public/fonts/

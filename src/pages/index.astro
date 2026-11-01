@@ -1,0 +1,127 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CharmTile from '../components/CharmTile.astro';
+import WorkMotion from '../components/WorkMotion.astro';
+import { links, otherProjects, formatDate } from '../site';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const entries = (await getCollection('journal', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projectName = (id: string) => projects.find((p) => p.id === id)?.data.short ?? id;
+---
+<Base
+  title="Vigneshwararaj Sathianarayanan — Computer Science Engineer"
+  description="Vigneshwararaj Sathianarayanan, Computer Science Engineer and M.Sc. student in AI and machine learning at Linköping University. Portfolio and build journal."
+>
+  <Hero />
+
+  <section class="work" id="work" aria-labelledby="work-title">
+    <div class="work-head">
+      <span class="work-band" aria-hidden="true"></span>
+      <h2 id="work-title" class="title3d">Work</h2>
+    </div>
+    <p class="work-intro" data-rise style="--d:1">What I have built, on my own and in teams, from industrial sensor data to AI that runs on a laptop.</p>
+    <div class="project-list">
+      {projects.map((p) => (
+        <a class="project" href={`/projects/${p.id}/`}>
+          {p.data.tileCharm
+            ? <div class="project-media"><CharmTile /></div>
+            : p.data.tile
+            ? <div class="project-media"><img src={p.data.tile} alt={p.data.tileAlt} width="1100" height="756" loading="lazy" /></div>
+            : p.data.image
+            ? <div class:list={['project-media', { fit: p.data.imageFit === 'contain' }]}><img src={p.data.image} alt={p.data.imageAlt} width="1100" height="756" loading="lazy" /></div>
+            : <div class={`project-media panel c${p.data.order % 3}`} aria-hidden="true"><span>{p.data.short}</span></div>}
+          <div class="project-text">
+            <h3>{p.data.title}</h3>
+            <p class="project-kind">{p.data.kind}, {p.data.year}</p>
+            <p class="project-sum">{p.data.summary}</p>
+            <span class="project-go">View project <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div class="others" data-rise>
+      <h3 class="head">Also built</h3>
+      <ul>
+        {otherProjects.map((o) => (
+          <li><a href={o.href}><span class="o-name">{o.name}</span><span class="o-year">{o.year}</span><span class="o-text">{o.text}</span></a></li>
+        ))}
+      </ul>
+    </div>
+    <WorkMotion />
+  </section>
+
+  <section class="journal" aria-labelledby="journal-title">
+    <h2 id="journal-title" class="title3d" data-rise>Journal</h2>
+    <div class="journal-grid" data-rise style="--d:1">
+      <p>Notes from the build: what I tried, what broke, and what I learned.</p>
+      <a class="link" href="/journal/">All entries</a>
+    </div>
+    <div class="rows">
+      {entries.slice(0, 4).map((e, i) => (
+        <a href={`/journal/${e.id}/`} data-rise style={`--d:${i}`}>
+          <time datetime={e.data.date.toISOString()}>{formatDate(e.data.date)}</time>
+          <h3>{e.data.title}</h3>
+          <span class="tag">{projectName(e.data.project)}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="about" id="about" aria-labelledby="about-title">
+    <figure class="about-art" data-rise>
+      <img src="/images/illustration.webp" alt="Illustration of Vigneshwararaj on a rock by the sea, with the sage Thiruvalluvar behind him and the Thiruvalluvar statue at Kanyakumari in the distance" width="1200" height="2142" loading="lazy" />
+    </figure>
+    <div class="about-body">
+      <h2 id="about-title" class="title3d" data-rise>About</h2>
+      <div class="about-text" data-rise style="--d:1">
+        <p>I'm Vigneshwararaj Sathianarayanan, a Computer Science Engineer. I spent two years as a software engineer at NielsenIQ in Chennai, then moved to Sweden for a master's in AI and machine learning.</p>
+        <p>This summer at SKF in Gothenburg, I built a data platform on Microsoft Fabric, an AI agent that writes its own file parsers, and a model that finds test failures. I like problems where the data is messy and the right approach is still open.</p>
+      </div>
+      <div class="record" data-rise>
+        <h3>Experience</h3>
+        <ul>
+          <li><span>SKF Vertevo, machine learning and data engineering</span><span>2026</span></li>
+          <li><span>NielsenIQ, software engineer</span><span>2023–25</span></li>
+        </ul>
+      </div>
+      <div class="record" data-rise>
+        <h3>Education</h3>
+        <ul>
+          <li><span>Linköping University, M.Sc. Computer Science, AI and ML</span><span>2025–27</span></li>
+          <li><span>Amrita Vishwa Vidyapeetham, B.Tech. Computer Science</span><span>2019–23</span></li>
+        </ul>
+      </div>
+      <div class="record" data-rise>
+        <h3>Awards</h3>
+        <ul>
+          <li><span>1st prize, Innovation Award, NielsenIQ Global Hackfest</span><span>2024</span></li>
+          <li><span>Rising Star Impact Award, NielsenIQ</span><span>2024</span></li>
+          <li><span>2nd prize, Adventure Day Hackathon, Azure Monitoring</span><span>2024</span></li>
+          <li><span>Finalist, Smart India Hackathon</span><span>2022</span></li>
+        </ul>
+      </div>
+      <div class="record" data-rise>
+        <h3>Skills</h3>
+        <div class="skills">
+          <p><b>Languages:</b> Python, SQL, MATLAB, Java, C++</p>
+          <p><b>Machine learning:</b> PyTorch, TensorFlow, time-series, anomaly detection, LLM fine-tuning, RAG and agents, reinforcement learning</p>
+          <p><b>Data and platforms:</b> Apache Spark, Delta Lake, Microsoft Fabric, Azure, Snowflake, Git, Linux, ROS 2</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="contact-title">
+    <h2 id="contact-title" class="head" data-rise>Let's talk</h2>
+    <p class="contact-lead" data-rise style="--d:1">I'm looking for a master's thesis in AI or ML, from January 2027, anywhere in Sweden.</p>
+    <a class="mail" href={`mailto:${links.email}`} data-rise style="--d:2">{links.email}</a>
+    <ul class="contact-links" data-rise style="--d:3">
+      <li><a href={links.linkedin}>LinkedIn</a></li>
+      <li><a href={links.github}>GitHub</a></li>
+      <li>Linköping, Sweden</li>
+    </ul>
+  </section>
+</Base>

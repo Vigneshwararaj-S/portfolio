@@ -1,0 +1,33 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import MoreWork from '../../components/MoreWork.astro';
+import { formatDate } from '../../site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('journal', ({ data }) => !data.draft);
+  return entries.map((e) => ({ params: { slug: e.id }, props: { entry: e } }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const project = (await getCollection('projects')).find((p) => p.id === data.project);
+---
+<Base title={`${data.title} — Journal`} description={data.summary} image={project?.data.image} current="journal">
+  <div class="page">
+    <article class="post">
+      <h1 class="page-title" data-rise>{data.title}</h1>
+      <p class="page-lead" data-rise style="--d:1">{data.summary}</p>
+      <p class="page-meta" data-rise style="--d:2">
+        <time datetime={data.date.toISOString()}>{formatDate(data.date)}</time>
+        {project && <span>Part of <a class="link" href={`/projects/${project.id}/`}>{project.data.short}</a></span>}
+      </p>
+      <div class="prose">
+        <Content />
+      </div>
+      <p class="post-back"><a class="link" href="/journal/">All journal entries</a></p>
+    </article>
+    <MoreWork exclude={data.project} />
+  </div>
+</Base>

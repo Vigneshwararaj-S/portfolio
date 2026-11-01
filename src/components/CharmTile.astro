@@ -1,0 +1,61 @@
+---
+// The assistant's character, cycling through its four states: idle, listening, thinking, speaking.
+const chili = 'M32 -6 C 16 -9, -6 -7, -28 -1 C -32 0, -32 2, -28 3 C -6 8, 16 7, 32 5 C 34 2, 34 -3, 32 -6 Z';
+const states = [
+  { id: 'idle', label: 'Idle' },
+  { id: 'listening', label: 'Listening' },
+  { id: 'thinking', label: 'Thinking' },
+  { id: 'speaking', label: 'Speaking' },
+];
+---
+<div class="charm-tile" data-state="idle" role="img" aria-label="The assistant's lemon-and-chilli character, moving through idle, listening, thinking and speaking">
+  <svg viewBox="0 0 180 240" aria-hidden="true">
+    <defs>
+      <linearGradient id="charmLemon" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f4e876" /><stop offset="100%" stop-color="#c9d13a" /></linearGradient>
+      <linearGradient id="charmChili" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8a1f1f" /><stop offset="55%" stop-color="#c23a2a" /><stop offset="100%" stop-color="#6b1414" /></linearGradient>
+      <radialGradient id="charmGlow"><stop offset="0%" stop-color="#fff7b0" /><stop offset="100%" stop-color="#fff7b0" stop-opacity="0" /></radialGradient>
+    </defs>
+    <!-- Static position stays on outer groups; CSS animation only on inner ones, so transforms never clash. -->
+    <g class="charm-body">
+      <line x1="90" y1="-40" x2="90" y2="55" stroke="#8a7a5c" stroke-width="1.2" />
+      <ellipse cx="90" cy="70" rx="26" ry="22" fill="url(#charmLemon)" stroke="#8a9a3a" stroke-width="1" />
+      <ellipse class="charm-glow" cx="90" cy="70" rx="40" ry="36" fill="url(#charmGlow)" />
+      <g transform="translate(88,49)"><path class="charm-leaf" d="M0 0 Q2 -5 5 -1 Q3 3 0 0 Z" fill="#4a7a3a" /></g>
+      <line x1="90" y1="92" x2="90" y2="108" stroke="#8a7a5c" stroke-width="1" />
+      <path fill="url(#charmChili)" stroke="#4a0f0f" stroke-width="0.8" transform="translate(86,112) rotate(-4)" d={chili} />
+      <path fill="url(#charmChili)" stroke="#4a0f0f" stroke-width="0.8" transform="translate(94,122) rotate(3)" d={chili} />
+      <g transform="translate(86,132) rotate(-2)">
+        <path fill="url(#charmChili)" stroke="#4a0f0f" stroke-width="0.8" d={chili} />
+        <ellipse class="charm-mouth" cx="-2" cy="1" rx="4" ry="1.2" fill="#2a0808" />
+      </g>
+      <path fill="url(#charmChili)" stroke="#4a0f0f" stroke-width="0.8" transform="translate(94,142) rotate(5)" d={chili} />
+      <g class="charm-fly">
+        <ellipse cx="0" cy="0" rx="2.2" ry="1.4" fill="#e8e4d4" />
+        <ellipse cx="-1.5" cy="-1.5" rx="2" ry="0.8" fill="#e8e4d4" opacity="0.6" transform="rotate(-20)" />
+        <ellipse cx="1.5" cy="-1.5" rx="2" ry="0.8" fill="#e8e4d4" opacity="0.6" transform="rotate(20)" />
+      </g>
+    </g>
+  </svg>
+  <ul class="charm-states" aria-hidden="true">
+    {states.map((s) => <li data-for={s.id}>{s.label}</li>)}
+  </ul>
+</div>
+
+<script>
+  // Play the four states one by one on every charm on the page.
+  const order = ['idle', 'listening', 'thinking', 'speaking'];
+  const hold: Record<string, number> = { idle: 3200, listening: 3200, thinking: 4000, speaking: 3200 };
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLElement>('.charm-tile').forEach((tile) => {
+      let n = 0;
+      const next = () => {
+        tile.dataset.state = order[n];
+        tile.querySelectorAll('li').forEach((li) => li.classList.toggle('on', li.dataset.for === order[n]));
+        const wait = hold[order[n]];
+        n = (n + 1) % order.length;
+        setTimeout(next, wait);
+      };
+      next();
+    });
+  }
+</script>

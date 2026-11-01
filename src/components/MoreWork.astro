@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props { exclude?: string; }
+const { exclude } = Astro.props;
+const projects = (await getCollection('projects'))
+  .filter((p) => p.id !== exclude)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+---
+<section class="more" aria-labelledby="more-title">
+  <h2 id="more-title" class="head" data-rise>More work</h2>
+  <ul>
+    {projects.map((p, i) => (
+      <li data-rise style={`--d:${i}`}>
+        <a href={`/projects/${p.id}/`}>
+          {p.data.tile
+            ? <span class="frame"><img src={p.data.tile} alt={p.data.tileAlt} width="900" height="1125" loading="lazy" /></span>
+            : p.data.image
+            ? <span class:list={['frame', { fit: p.data.imageFit === 'contain' }]}><img src={p.data.image} alt={p.data.imageAlt} width="900" height="1125" loading="lazy" /></span>
+            : <span class={`frame panel c${p.data.order % 3}`} aria-hidden="true"><span>{p.data.short}</span></span>}
+          <span class="nm">{p.data.short}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>

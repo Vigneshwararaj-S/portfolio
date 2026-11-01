@@ -1,0 +1,54 @@
+<script>
+  // Work section motion, from the comic-panel wallpaper: halftone strips slash away to reveal each project.
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.querySelectorAll<HTMLElement>('.project').forEach((project, index) => {
+      const media = project.querySelector<HTMLElement>('.project-media')!;
+      const picture = media.querySelector<HTMLElement>('img, .charm-tile');
+      const title = project.querySelector('h3');
+      const rest = project.querySelectorAll('.project-kind, .project-sum, .project-go');
+
+      // The strips only exist while they are needed, so the page is complete without this script.
+      const strips = document.createElement('span');
+      strips.className = 'strips';
+      strips.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 3; i++) {
+        const strip = document.createElement('i');
+        strip.className = `strip s${(i + index) % 3}`;
+        strip.style.transformOrigin = i % 2 ? 'left center' : 'right center';
+        strips.append(strip);
+      }
+      media.append(strips);
+
+      gsap.set(title, { x: index % 2 ? 60 : -60, skewX: -14, autoAlpha: 0 });
+      gsap.set(rest, { y: 18, autoAlpha: 0 });
+
+      gsap.timeline({
+        scrollTrigger: { trigger: project, start: 'top 82%', once: true },
+        onComplete: () => strips.remove(),
+      })
+        .to(strips.children, { scaleX: 0, duration: 0.62, ease: 'power4.inOut', stagger: 0.09 }, 0)
+        .to(title, { x: 0, skewX: 0, autoAlpha: 1, duration: 0.5, ease: 'power4.out' }, 0.22)
+        .to(rest, { y: 0, autoAlpha: 1, duration: 0.45, ease: 'power3.out', stagger: 0.06 }, 0.42);
+
+      // Photographs drift as you scroll. Screenshots and charts stay still so they remain readable.
+      if (picture && !media.classList.contains('fit') && picture.tagName === 'IMG') {
+        gsap.set(picture, { scale: 1.14 });
+        gsap.fromTo(picture, { yPercent: -5 }, {
+          yPercent: 5, ease: 'none',
+          scrollTrigger: { trigger: project, start: 'top bottom', end: 'bottom top', scrub: true },
+        });
+      }
+    });
+
+    // The halftone band sweeps across the section heading with the scroll.
+    gsap.fromTo('.work-band', { xPercent: -24 }, {
+      xPercent: 8, ease: 'none',
+      scrollTrigger: { trigger: '.work', start: 'top bottom', end: 'top -40%', scrub: true },
+    });
+  }
+</script>

@@ -1,0 +1,21 @@
+---
+import { links } from '../site';
+
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="footer-top">
+    <b>Vigneshwararaj Sathianarayanan</b>
+    <ul>
+      <li><a href="/#work">Work</a></li>
+      <li><a href="/journal/">Journal</a></li>
+      <li><a href="/#about">About</a></li>
+      <li><a href={`mailto:${links.email}`}>Email</a></li>
+      <li><a href={links.github}>GitHub</a></li>
+      <li><a href={links.linkedin}>LinkedIn</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </div>
+  <p class="credits">The illustrated project cards (cricket, conversation, Reddit, WiFi and supermarket) are AI-generated. Bearing card image: <a href="https://commons.wikimedia.org/wiki/File:1984_deep_groove_ball_bearing_UR_6304_made_in_Czechoslovakia_by_ZKL.jpg">Deep groove ball bearing UR 6304</a> by R. Henrik Nilsson, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>. Satellite card image: <a href="https://commons.wikimedia.org/wiki/File:Lviv_City,_Ukraine,_Sentinel-2_satellite_image,_30-AUG-2017.jpg">Lviv City, Sentinel-2 satellite image</a> by the European Space Agency, <a href="https://creativecommons.org/licenses/by-sa/3.0/igo/deed.en">CC BY-SA 3.0 IGO</a>, via Wikimedia Commons.</p>
+  <p class="legal">© {year} Vigneshwararaj Sathianarayanan</p>
+</footer>
