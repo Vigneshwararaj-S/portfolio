@@ -37,6 +37,6 @@ Create a Markdown file in `src/content/projects/`. Copy an existing one for the 
 
 Email, GitHub and LinkedIn are set in `src/site.ts`.
 
-## Name font
+## Hero name
 
-The hero name uses Rovelink from `public/fonts/`. That folder is gitignored because the local copy is a personal-use demo. Without it the name falls back to Passion One. After buying a licence, remove the folder from `.gitignore` and commit the font.
+The name in the hero is original lettering drawn in `src/components/NameMark.astro`, so it needs no font file.

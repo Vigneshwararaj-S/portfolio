@@ -1,4 +1,6 @@
 ---
+import NameMark from './NameMark.astro';
+
 const messages = [
   { title: 'Computer Science Engineer', text: 'Vigneshwararaj Sathianarayanan. M.Sc. student in AI and machine learning at Linköping University.' },
   { title: 'Engineer first', text: 'Two years building backend systems at NielsenIQ. One engine I built cut ticket resolution from 2 days to real time.' },
@@ -7,13 +9,6 @@ const messages = [
   { title: 'Looking for a thesis', text: "A master's thesis in AI or ML, from January 2027. Let's talk." },
 ];
 
-// A sharper V than the font's: same slant and edges, but the strokes meet in a point.
-const vee = 'M231 85 L412 0 L352 400 L524 1 L640 160 L262 804 L126 861 Z';
-const edges = Array.from({ length: 16 }, (_, n) => {
-  const i = 16 - n;
-  const fill = i >= 13 ? 'var(--red-dark)' : i >= 9 ? 'var(--red)' : i >= 5 ? 'var(--teal-dark)' : 'var(--teal)';
-  return { x: -4.5 * i, y: 11 * i, fill };
-});
 ---
 <section class="hero" aria-labelledby="hero-title">
   <div class="stage">
@@ -21,7 +16,7 @@ const edges = Array.from({ length: 16 }, (_, n) => {
     <noscript><img class="layer" style="object-fit:cover" src="/hero/frames/0001.webp" alt="Vigneshwararaj smiling in a street" width="1000" height="1250" /></noscript>
     <div class="stage-fade"></div>
     <canvas id="cut" class="layer" width="1000" height="1250" aria-hidden="true"></canvas>
-    <h1 id="hero-title" class="name" data-text="Vigneshwararaj"><span class="vt">V</span><svg class="vee" viewBox="0 0 641 861" aria-hidden="true"><defs><path id="vee" d={vee} /></defs>{edges.map((e) => <use href="#vee" x={e.x} y={e.y} fill={e.fill} />)}<use href="#vee" x="-2" y="4" fill="#1c1405" /><use href="#vee" fill="var(--yellow)" /><path d="M322 495 L250 670" stroke="var(--teal)" stroke-width="7" fill="none" /><circle cx="322" cy="495" r="20" fill="var(--teal)" /></svg>igneshwararaj</h1>
+    <h1 id="hero-title" class="name"><span class="vh">Vigneshwararaj</span><NameMark /></h1>
     <div class="side">
       {messages.map((m, i) => (
         <div class:list={['say', { on: i === 0 }]}><h2>{m.title}</h2><p>{m.text}</p></div>
@@ -69,15 +64,6 @@ const edges = Array.from({ length: 16 }, (_, n) => {
     hero.dataset.frame = String(n * stride);
   }
   Promise.all([frames[0].decode(), cuts[0].decode()]).catch(() => {}).then(() => { current = -1; draw(0); });
-
-  // Fit the name to the page width, whatever the font's real width is.
-  function fit() {
-    name.style.fontSize = '100px';
-    const margin = parseFloat(getComputedStyle(document.querySelector('.nav')!).paddingLeft);
-    name.style.fontSize = ((document.documentElement.clientWidth - 2 * margin - 12) / (name.scrollWidth / 100)) + 'px';
-  }
-  document.fonts.load('40px Rovelink').catch(() => {}).then(() => document.fonts.ready).then(fit);
-  addEventListener('resize', fit);
 
   // Glitch bursts: every few seconds, on each message change, and on hover.
   function glitch() {

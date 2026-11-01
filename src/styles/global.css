@@ -1,9 +1,4 @@
-/* Palette measured from the reference film title. Rovelink is for the name only. */
-@font-face {
-  font-family: 'Rovelink';
-  src: url('/fonts/Rovelink.otf') format('opentype');
-  font-display: swap;
-}
+/* Palette measured from the reference film title. */
 
 :root {
   --bg: #0a0c0d;
@@ -93,7 +88,7 @@ ul, ol { padding: 0; list-style: none; }
 .nav ul a:not(.btn):hover::after, .nav ul a[aria-current]::after { transform: scaleX(1); }
 
 /* Hero */
-.hero { --step: 96px; --count: 5; --top: 14.5svh; position: relative; height: calc(100svh + var(--step) * (var(--count) - 1) + 120px); }
+.hero { --step: 96px; --count: 5; --top: 16svh; position: relative; height: calc(100svh + var(--step) * (var(--count) - 1) + 120px); }
 .hero.touch { --step: 220px; }
 .stage { position: sticky; top: 0; height: 100svh; overflow: clip; background: var(--bg); }
 .layer { position: absolute; right: -3svh; top: var(--top); height: calc(100% - var(--top)); aspect-ratio: 4 / 5; }
@@ -118,28 +113,18 @@ html:not(.js) .side { position: relative; top: 0; margin-top: 52svh; }
 html:not(.js) .say { position: static; margin-bottom: 32px; }
 
 .name {
-  position: absolute; z-index: 3; left: var(--m); top: 12.5svh;
-  font-family: 'Rovelink', var(--display); font-weight: 400; font-synthesis: none;
-  text-transform: uppercase; color: var(--yellow); line-height: 1; white-space: nowrap; font-size: 15vw;
+  position: absolute; z-index: 3; left: var(--m); top: 14svh;
+  width: calc(100vw - 2 * var(--m)); margin: 0; font-size: 11vw; line-height: 0;
   transform: rotate(-2deg); transform-origin: left top;
-  text-shadow:
-    -.002em .004em 0 #1c1405,
-    -.0045em .011em 0 var(--teal), -.009em .022em 0 var(--teal), -.0135em .033em 0 var(--teal), -.018em .044em 0 var(--teal),
-    -.0225em .055em 0 var(--teal-dark), -.027em .066em 0 var(--teal-dark), -.0315em .077em 0 var(--teal-dark), -.036em .088em 0 var(--teal-dark),
-    -.0405em .099em 0 var(--red), -.045em .11em 0 var(--red), -.0495em .121em 0 var(--red), -.054em .132em 0 var(--red),
-    -.0585em .143em 0 var(--red-dark), -.063em .154em 0 var(--red-dark), -.0675em .165em 0 var(--red-dark), -.072em .176em 0 var(--red-dark);
 }
-.vee { width: .641em; height: .861em; vertical-align: -.161em; overflow: visible; }
-.vt { position: absolute; opacity: 0; }
+.wm { display: block; width: 100%; height: auto; overflow: visible; }
+.wm-a, .wm-b { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; }
 
-/* Glitch: two colour copies of the name, cut into jumping slices during a burst. */
-.name::before, .name::after { content: attr(data-text); position: absolute; left: 0; top: 0; text-shadow: none; opacity: 0; pointer-events: none; }
-.name::before { color: var(--teal); }
-.name::after { color: var(--red); }
+/* Glitch: two colour copies of the drawn name, cut into jumping slices during a burst. */
 @media (prefers-reduced-motion: no-preference) {
   .name.glitch { animation: name-jolt .46s steps(1) both; }
-  .name.glitch::before { animation: slice-a .46s steps(1) both; }
-  .name.glitch::after { animation: slice-b .46s steps(1) both; }
+  .name.glitch .wm-a { animation: slice-a .46s steps(1) both; }
+  .name.glitch .wm-b { animation: slice-b .46s steps(1) both; }
 }
 @keyframes name-jolt {
   0%, 100% { translate: 0 0; }
@@ -177,7 +162,7 @@ html:not(.js) .say { position: static; margin-bottom: 32px; }
 section[id] { scroll-margin-top: 72px; }
 
 /* Work */
-.work { padding: var(--gap) var(--m) 0; }
+.work { padding: var(--gap) var(--m) 0; overflow-x: clip; }
 .work-intro { margin-top: 28px; font-size: var(--lead); max-width: 32em; }
 .project-list { margin-top: clamp(64px, 8vw, 120px); display: flex; flex-direction: column; gap: clamp(72px, 9vw, 140px); }
 .project { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center; text-decoration: none; }
@@ -400,7 +385,7 @@ section[id] { scroll-margin-top: 72px; }
 
 /* Portrait screens and phones */
 @media (max-aspect-ratio: 1 / 1) {
-  .hero { --top: 9.5svh; }
+  .hero { --top: 10.5svh; }
   .layer { right: auto; left: 0; width: 100%; height: auto; }
   #frame {
     -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 82%, transparent);
@@ -409,7 +394,7 @@ section[id] { scroll-margin-top: 72px; }
     mask-composite: add;
   }
   .stage-fade { background: linear-gradient(to bottom, rgb(10 12 13 / .6), transparent 12%); }
-  .name { top: 8.5svh; transform: rotate(-2deg) scaleY(1.5); }
+  .name { top: 10svh; transform: rotate(-2deg) scaleY(1.5); }
   .side { left: var(--m); right: var(--m); width: auto; top: auto; bottom: 32px; min-height: 150px; }
   .say { top: auto; bottom: 0; }
   .say h2 { font-size: clamp(38px, 10.5vw, 64px); }

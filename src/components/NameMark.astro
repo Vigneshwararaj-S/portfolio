@@ -1,0 +1,72 @@
+---
+// Original hand-drawn lettering for the hero name. Each letter is a set of polygons on a grid
+// about 100 units tall (y runs down). Tops rise to the right and bottoms drop to the left, so the
+// letters read as uneven blades. Nothing here comes from a font file.
+type Letter = { w: number; shapes: number[][] };
+const glyphs: Record<string, Letter> = {
+  V: { w: 84, shapes: [[0, 6, 34, -6, 44, 58, 58, -14, 84, 0, 50, 112, 24, 100]] },
+  I: { w: 32, shapes: [[2, 8, 32, -8, 28, 88, 8, 112]] },
+  G: { w: 80, shapes: [[14, 4, 84, -10, 72, 8, 78, 14, 66, 26, 32, 28, 28, 74, 48, 72, 50, 60, 38, 62, 42, 44, 80, 40, 72, 100, 4, 110, 0, 92, 6, 16]] },
+  N: { w: 84, shapes: [[0, 6, 30, -4, 52, 46, 56, -12, 84, -2, 76, 102, 50, 110, 28, 54, 24, 112, -2, 100]] },
+  E: { w: 72, shapes: [[4, 4, 78, -12, 66, 4, 72, 10, 62, 14, 64, 22, 34, 26, 32, 38, 58, 34, 50, 58, 30, 60, 28, 76, 70, 70, 60, 84, 66, 90, 56, 94, 58, 102, -2, 112]] },
+  S: { w: 76, shapes: [[14, 4, 82, -12, 70, 6, 74, 12, 62, 24, 34, 28, 32, 38, 62, 34, 74, 44, 66, 94, 54, 104, -4, 112, 6, 94, 0, 88, 10, 76, 40, 74, 42, 60, 12, 64, 0, 52, 6, 12]] },
+  H: { w: 82, shapes: [[2, 6, 32, -6, 30, 36, 50, 34, 54, -12, 82, -2, 74, 102, 46, 110, 48, 62, 28, 64, 24, 112, -2, 100]] },
+  W: { w: 120, shapes: [[0, 4, 28, -6, 34, 56, 48, 2, 68, -4, 80, 54, 92, -14, 120, -2, 92, 104, 66, 112, 58, 50, 46, 110, 20, 102]] },
+  A: { w: 84, shapes: [[30, 4, 66, -14, 84, 100, 58, 112, 52, 84, 32, 86, 24, 110, -4, 102], [46, 30, 50, 60, 38, 62]] },
+  R: { w: 82, shapes: [[2, 6, 66, -8, 82, 6, 78, 44, 62, 56, 82, 104, 50, 112, 38, 62, 30, 64, 26, 112, -2, 102], [32, 24, 52, 20, 50, 38, 30, 40]] },
+  J: { w: 66, shapes: [[24, 6, 66, -12, 58, 86, 44, 104, 6, 112, -2, 92, 4, 66, 30, 62, 28, 76, 32, 74, 36, 26, 18, 28]] },
+};
+const word = 'VIGNESHWARARAJ';
+const gap = 5;
+// Tighter spacing where slanted edges leave a visual hole between two letters.
+const kern: Record<string, number> = { WA: -16, RA: -8, AJ: -6 };
+let x = 0;
+const parts: string[] = [];
+for (let c = 0; c < word.length; c++) {
+  const g = glyphs[word[c]];
+  for (const pts of g.shapes) {
+    let d = '';
+    for (let i = 0; i < pts.length; i += 2) d += `${i ? 'L' : 'M'}${pts[i] + x} ${pts[i + 1]}`;
+    parts.push(d + 'Z');
+  }
+  x += g.w + gap + (kern[word.slice(c, c + 2)] ?? 0);
+}
+const path = parts.join('');
+const total = x - gap;
+const slant = 30; // sideways shift across the 100-unit height, for the lean
+const depth = Array.from({ length: 16 }, (_, n) => {
+  const i = 16 - n;
+  const fill = i >= 13 ? 'var(--red-dark)' : i >= 9 ? 'var(--red)' : i >= 5 ? 'var(--teal-dark)' : 'var(--teal)';
+  return { x: -0.65 * i, y: 1.5 * i, fill };
+});
+const viewBox = `-16 -18 ${total + slant + 30} 160`;
+const skew = `skewX(${-Math.atan(slant / 100) * 180 / Math.PI})`;
+---
+<svg class="wm" viewBox={viewBox} aria-hidden="true">
+  <defs>
+    <path id="wm-path" fill-rule="evenodd" d={path} />
+    <!-- Paint brush: noise stretched along the stroke frays the edges, leaves dry gaps and varies the paint. -->
+    <filter id="wm-rough" filterUnits="userSpaceOnUse" x="-60" y="-40" width={total + 120} height="200" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".004 .13" numOctaves="2" seed="7" result="streak" />
+      <feDisplacementMap in="SourceGraphic" in2="streak" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="wm-brush" filterUnits="userSpaceOnUse" x="-60" y="-40" width={total + 120} height="200" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".004 .13" numOctaves="2" seed="7" result="streak" />
+      <feDisplacementMap in="SourceGraphic" in2="streak" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="rough" />
+      <feColorMatrix in="streak" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  16 0 0 0 -10.9" result="gaps" />
+      <feComposite in="rough" in2="gaps" operator="out" result="dry" />
+      <feColorMatrix in="streak" type="matrix" values="0 0 0 0 .84  0 0 0 0 .56  0 0 0 0 0  0 5 0 0 -2.75" result="tone" />
+      <feComposite in="tone" in2="dry" operator="in" result="toned" />
+      <feMerge><feMergeNode in="dry" /><feMergeNode in="toned" /></feMerge>
+    </filter>
+  </defs>
+  <g transform={`translate(${slant} 0) ${skew}`}>
+    <g filter="url(#wm-rough)">
+      {depth.map((e) => <use href="#wm-path" x={e.x} y={e.y} fill={e.fill} />)}
+      <use href="#wm-path" x="-.3" y=".6" fill="#1c1405" />
+    </g>
+    <use href="#wm-path" fill="var(--yellow)" filter="url(#wm-brush)" />
+  </g>
+</svg>
+<svg class="wm wm-a" viewBox={viewBox} aria-hidden="true"><g transform={`translate(${slant} 0) ${skew}`}><use href="#wm-path" fill="var(--teal)" filter="url(#wm-rough)" /></g></svg>
+<svg class="wm wm-b" viewBox={viewBox} aria-hidden="true"><g transform={`translate(${slant} 0) ${skew}`}><use href="#wm-path" fill="var(--red)" filter="url(#wm-rough)" /></g></svg>
