@@ -96,7 +96,7 @@ ul, ol { padding: 0; list-style: none; }
 .seal-ring { font-family: var(--text); font-weight: 600; font-size: 10.5px; }
 .seal-from { font-family: var(--text); font-weight: 600; font-size: 10px; }
 .seal-year { font-family: var(--display); font-weight: 700; font-size: 25px; letter-spacing: .03em; }
-.seal-hero { position: absolute; z-index: 6; left: calc(var(--m) + 44px); top: 10px; transform-origin: left top; }
+.seal-hero { position: absolute; z-index: 6; right: 12px; bottom: 12px; width: clamp(120px, 10vw, 156px); height: clamp(120px, 10vw, 156px); }
 .seal:hover { rotate: -4deg; }
 /* The small version of the seal, in the bar once the seal has scrolled away. */
 .open-badge {
@@ -189,6 +189,29 @@ html:not(.js) .say { position: static; margin-bottom: 32px; }
 }
 
 section[id] { scroll-margin-top: 72px; }
+
+/* Skills: slanted comic strips, each ending in a halftone edge. */
+.toolkit { padding: var(--gap) var(--m) 0; overflow-x: clip; }
+.toolkit-title { font-size: clamp(2.75rem, 1rem + 6.5vw, 7.5rem); }
+.toolkit-rows { margin-top: clamp(32px, 4vw, 56px); display: flex; flex-direction: column; gap: 8px; }
+.toolkit-row {
+  --strip: var(--orange); --strip-ink: var(--bg);
+  position: relative; display: grid; grid-template-columns: 3fr 6fr 3fr; column-gap: 24px; align-items: center;
+  padding: 22px 8% 22px 36px; background: var(--strip); color: var(--strip-ink);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.toolkit-row:nth-child(3n + 2) { --strip: var(--blue); }
+.toolkit-row:nth-child(3n + 3) { --strip: #c01f17; --strip-ink: var(--ink); }
+.toolkit-row::after {
+  content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 7%; pointer-events: none;
+  background: var(--dots) 0 0 / 7px 7px; clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+}
+.toolkit-row h3 { margin: 0; font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem); line-height: 1.02; }
+.toolkit-skills { font-weight: 600; line-height: 1.35; }
+.toolkit-proof { display: flex; flex-wrap: wrap; gap: 4px 14px; font-weight: 600; font-size: var(--small); }
+.toolkit-proof a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .2em; transition: opacity 160ms; }
+.toolkit-proof a:hover { opacity: .7; }
+.toolkit-proof a:focus-visible { outline-color: currentColor; }
 
 /* Work */
 .work { padding: var(--gap) var(--m) 0; overflow-x: clip; }
@@ -331,8 +354,6 @@ section[id] { scroll-margin-top: 72px; }
 .record h3 { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: 1.75rem; color: var(--yellow); line-height: 1; margin-bottom: 14px; }
 .record li { display: flex; justify-content: space-between; gap: 24px; padding: 6px 0; }
 .record li span:last-child { color: var(--soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.skills { display: flex; flex-direction: column; gap: 6px; }
-.skills b { font-weight: 600; }
 
 /* Contact */
 .contact { margin-top: var(--gap); background: var(--yellow); color: var(--bg); padding: clamp(56px, 8vw, 110px) var(--m); }
@@ -412,9 +433,6 @@ section[id] { scroll-margin-top: 72px; }
 .lost > div { grid-column: 1 / span 7; }
 .lost figure { grid-column: 9 / span 4; }
 
-/* Narrower screens: the name sits closer to the bar, so the seal stays small. */
-@media (max-width: 1000px) { .seal-hero { scale: .62; } }
-
 /* Very narrow phones: the badge takes the mark's place in the bar. */
 @media (max-width: 350px) { .nav.show-badge .mark { display: none; } }
 
@@ -434,6 +452,11 @@ section[id] { scroll-margin-top: 72px; }
   .say { top: auto; bottom: 0; }
   .say h2 { font-size: clamp(38px, 10.5vw, 64px); }
 }
+/* Upright tablets: the seal keeps to the corner of the smaller, centred video. */
+@media (max-aspect-ratio: 1 / 1) and (min-width: 721px) {
+  .seal-hero { right: calc(50vw - 26.4svh + 14px); bottom: calc(23.5svh + 16px); }
+}
+
 /* Upright tablets: a smaller, centred video leaves the message on clear ground. */
 @media (max-aspect-ratio: 1 / 1) and (min-width: 600px) {
   .layer { left: 50%; translate: -50% 0; width: auto; height: 66svh; }
@@ -441,13 +464,17 @@ section[id] { scroll-margin-top: 72px; }
 
 @media (max-width: 720px) {
   .nav .hide { display: none; }
-  .seal-hero { left: auto; top: auto; right: 14px; bottom: 232px; width: 108px; height: 108px; scale: 1; }
+  .seal-hero { right: 14px; bottom: 232px; width: 108px; height: 108px; }
   .open-badge { display: none; padding: 7px 12px 7px 10px; gap: 6px; font-size: .875rem; }
   .nav.show-badge .open-badge { display: inline-flex; }
   .open-badge .only-sm { display: inline; }
   .nav.show-badge .nav-journal, .nav.show-badge .nav-cv { display: none; }
   .nav .btn { padding: 9px 12px; font-size: .875rem; white-space: nowrap; }
   .project, .project:nth-child(even) { display: block; }
+  .toolkit-row { display: block; padding: 18px 14% 18px 26px; }
+  .toolkit-skills { margin-top: 8px; }
+  .toolkit-proof { margin-top: 10px; }
+  .toolkit-row::after { width: 11%; }
   .project-text, .project:nth-child(even) .project-text { padding: 20px 0 0; }
   .journal-grid { display: block; }
   .journal-grid > a { display: inline-block; margin-top: 18px; }

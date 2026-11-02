@@ -1,0 +1,63 @@
+---
+// Skills grouped by area, each linked to the project that shows it. Facts come from the CV and project pages.
+const groups = [
+  {
+    name: 'Machine learning',
+    skills: 'Predictive maintenance, time-series analysis, anomaly detection, classification, clustering, XGBoost, statistical analysis, feature extraction',
+    proof: [['SKF', 'skf-endurance-tests'], ['IPL win factors', 'ipl-win-factors']],
+  },
+  {
+    name: 'Deep learning',
+    skills: 'PyTorch, TensorFlow, PyTorch Geometric, transformers, LSTMs, diffusion-based encoders, LoRA',
+    proof: [['SKF', 'skf-endurance-tests'], ['WiFi crowd count', 'wifi-crowd-counting']],
+  },
+  {
+    name: 'LLMs, NLP and agents',
+    skills: 'LLM fine-tuning, QLoRA, custom embeddings, vision-language models, RAG, agents, MCP, Ollama, BERTopic, zero-shot classification, speaker diarization',
+    proof: [['Stone inscriptions', 'tamil-inscriptions'], ['Local assistant', 'local-assistant'], ['Reddit needs', 'reddit-needs'], ['Pick your conversation', 'pick-your-conversation']],
+  },
+  {
+    name: 'Vision and robotics',
+    skills: 'CLIP fine-tuning, DINO, YOLO, MediaPipe, reinforcement learning (Soft Actor-Critic), ROS 2, Nav2',
+    proof: [['Satellite CLIP', 'satellite-clip'], ['Human-aware robot', 'human-aware-robot']],
+  },
+  {
+    name: 'Data platforms',
+    skills: 'Microsoft Fabric, Apache Spark, Delta Lake, Snowflake, Azure AI Foundry, Azure ML, Azure Data Lake Storage, SharePoint, sensor data',
+    proof: [['SKF', 'skf-endurance-tests']],
+  },
+  {
+    name: 'Software engineering',
+    skills: 'Python, Java, C++, SQL, MATLAB, JUnit, Git, Linux, FastAPI, React, Node.js, PostgreSQL, Docker',
+    proof: [['NielsenIQ', 'nielseniq-platform'], ['VR Office', 'vr-office'], ['Cinemate', 'cinemate']],
+  },
+];
+---
+<section class="toolkit" aria-labelledby="toolkit-title">
+  <h2 id="toolkit-title" class="title3d toolkit-title">What I work with</h2>
+  <ul class="toolkit-rows">
+    {groups.map((g) => (
+      <li class="toolkit-row">
+        <h3>{g.name}</h3>
+        <p class="toolkit-skills">{g.skills}</p>
+        <p class="toolkit-proof">{g.proof.map(([label, id]) => <a href={`/projects/${id}/`}>{label}</a>)}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  // Each strip slashes in from alternating sides as it reaches the screen.
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.registerPlugin(ScrollTrigger);
+    document.querySelectorAll<HTMLElement>('.toolkit-row').forEach((row, i) => {
+      gsap.from(row, {
+        xPercent: i % 2 ? 100 : -100, skewX: -12, duration: 0.6, ease: 'power4.out',
+        scrollTrigger: { trigger: row, start: 'top 92%', once: true },
+      });
+    });
+  }
+</script>

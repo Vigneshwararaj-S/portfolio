@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import CharmTile from '../components/CharmTile.astro';
 import WorkMotion from '../components/WorkMotion.astro';
+import Toolkit from '../components/Toolkit.astro';
 import { links, otherProjects, formatDate } from '../site';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -16,6 +17,8 @@ const projectName = (id: string) => projects.find((p) => p.id === id)?.data.shor
   description="Vigneshwararaj Sathianarayanan, Computer Science Engineer and M.Sc. student in AI and machine learning at Linköping University. Portfolio and build journal."
 >
   <Hero />
+
+  <Toolkit />
 
   <section class="work" id="work" aria-labelledby="work-title">
     <div class="work-head">
@@ -102,14 +105,6 @@ const projectName = (id: string) => projects.find((p) => p.id === id)?.data.shor
           <li><span>2nd prize, Adventure Day Hackathon, Azure Monitoring</span><span>2024</span></li>
           <li><span>Finalist, Smart India Hackathon</span><span>2022</span></li>
         </ul>
-      </div>
-      <div class="record" data-rise>
-        <h3>Skills</h3>
-        <div class="skills">
-          <p><b>Languages:</b> Python, SQL, MATLAB, Java, C++</p>
-          <p><b>Machine learning:</b> PyTorch, TensorFlow, time-series, anomaly detection, LLM fine-tuning, RAG and agents, reinforcement learning</p>
-          <p><b>Data and platforms:</b> Apache Spark, Delta Lake, Microsoft Fabric, Azure, Snowflake, Git, Linux, ROS 2</p>
-        </div>
       </div>
     </div>
   </section>
