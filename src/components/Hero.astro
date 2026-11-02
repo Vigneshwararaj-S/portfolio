@@ -1,5 +1,6 @@
 ---
 import NameMark from './NameMark.astro';
+import Seal from './Seal.astro';
 
 const messages = [
   { title: 'Computer Science Engineer', text: 'Vigneshwararaj Sathianarayanan. M.Sc. student in AI and machine learning at Linköping University.' },
@@ -17,6 +18,7 @@ const messages = [
     <div class="stage-fade"></div>
     <canvas id="cut" class="layer" width="1000" height="1250" aria-hidden="true"></canvas>
     <h1 id="hero-title" class="name"><span class="vh">Vigneshwararaj</span><NameMark /></h1>
+    <Seal id="seal-hero" class="seal-hero" />
     <div class="side">
       {messages.map((m, i) => (
         <div class:list={['say', { on: i === 0 }]}><h2>{m.title}</h2><p>{m.text}</p></div>

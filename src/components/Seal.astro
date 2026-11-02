@@ -1,0 +1,37 @@
+---
+// A round stamped seal saying what I am open to. `id` keeps the SVG references unique per copy on a page.
+interface Props { id: string; class?: string; }
+const { id, class: className } = Astro.props;
+
+// Scalloped outer edge, like a pressed seal.
+const points = 36;
+const edge = Array.from({ length: points * 2 }, (_, i) => {
+  const r = i % 2 ? 54 : 58;
+  const a = (i / (points * 2)) * Math.PI * 2;
+  return `${(60 + r * Math.cos(a)).toFixed(2)},${(60 + r * Math.sin(a)).toFixed(2)}`;
+}).join(' ');
+---
+<a class:list={['seal', className]} href="/#contact" aria-label="Open to thesis work in Sweden, from January 2027. Get in touch." title="Open to thesis work in Sweden, from January 2027">
+  <svg viewBox="0 0 120 120" aria-hidden="true">
+    <defs>
+      <path id={`${id}-ring`} d="M60 60 m-40 0 a40 40 0 1 1 80 0 a40 40 0 1 1 -80 0" />
+      <!-- Worn ink: fine noise roughens the edges and knocks small flecks out of the stamp. -->
+      <filter id={`${id}-ink`} x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="2" seed="4" result="grain" />
+        <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.4" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 16 0 0 -11.2" result="flecks" />
+        <feComposite in="rough" in2="flecks" operator="out" />
+      </filter>
+    </defs>
+    <g filter={`url(#${id}-ink)`}>
+      <polygon points={edge} fill="#b5121b" />
+      <circle cx="60" cy="60" r="51" fill="none" stroke="#fbf5e0" stroke-width="1.4" />
+      <circle cx="60" cy="60" r="31" fill="none" stroke="#fbf5e0" stroke-width="1.4" />
+    </g>
+    <g class="seal-ink">
+      <text class="seal-ring" fill="#fbf5e0"><textPath href={`#${id}-ring`} textLength="247" lengthAdjust="spacing">OPEN TO THESIS WORK • SWEDEN •</textPath></text>
+      <text class="seal-from" x="60" y="52" text-anchor="middle" fill="#fbf5e0">FROM JAN</text>
+      <text class="seal-year" x="60" y="75" text-anchor="middle" fill="#fbf5e0">2027</text>
+    </g>
+  </svg>
+</a>

@@ -2,6 +2,7 @@ export const links = {
   email: 'vignesh181201@gmail.com',
   github: 'https://github.com/Vigneshwararaj-S',
   linkedin: 'https://www.linkedin.com/in/vigneshwararaj-s-067446191',
+  cv: '/Vigneshwararaj-Sathianarayanan-CV.pdf',
 };
 
 // Smaller or older projects, listed by name on the home page.

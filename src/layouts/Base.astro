@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
+import { links } from '../site';
 
 interface Props {
   title: string;
@@ -35,11 +36,15 @@ const ogImage = new URL(image, Astro.site);
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <nav class="nav" aria-label="Main">
-      <a class="mark" href="/" aria-label="Vigneshwararaj Sathianarayanan, home">VS</a>
+      <div class="nav-left">
+        <a class="mark" href="/" aria-label="Vigneshwararaj Sathianarayanan, home">VR</a>
+        <a class="open-badge" href="/#contact"><span class="open-dot" aria-hidden="true"></span><span class="hide">Open to thesis work · from Jan 2027</span><span class="only-sm">Open to thesis · 2027</span></a>
+      </div>
       <ul>
         <li class="hide"><a href="/#work" aria-current={current === 'work' ? 'page' : undefined}>Work</a></li>
-        <li><a href="/journal/" aria-current={current === 'journal' ? 'page' : undefined}>Journal</a></li>
+        <li class="nav-journal"><a href="/journal/" aria-current={current === 'journal' ? 'page' : undefined}>Journal</a></li>
         <li class="hide"><a href="/#about" aria-current={current === 'about' ? 'page' : undefined}>About</a></li>
+        <li class="nav-cv"><a href={links.cv}>CV</a></li>
         <li><a class="btn" href="/#contact">Get in touch</a></li>
       </ul>
     </nav>
@@ -52,11 +57,23 @@ const ogImage = new URL(image, Astro.site);
       const nav = document.querySelector('.nav')!;
       const hero = document.querySelector<HTMLElement>('.hero');
       const onScroll = () => {
-        const limit = hero ? hero.offsetHeight - innerHeight : 40;
+        // Pages without the hero keep the small seal from the start, so it never covers their title.
+        const limit = hero ? hero.offsetHeight - innerHeight : -1;
         nav.classList.toggle('scrolled', scrollY > limit);
       };
       addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      // The badge stands in for the seal: it shows only once the seal has left the screen.
+      const seal = document.querySelector('.seal-hero');
+      if (seal && 'IntersectionObserver' in window) {
+        const barHeight = nav.getBoundingClientRect().height;
+        new IntersectionObserver(([entry]) => nav.classList.toggle('show-badge', !entry.isIntersecting), {
+          rootMargin: `-${Math.round(barHeight)}px 0px 0px 0px`,
+        }).observe(seal);
+      } else {
+        nav.classList.add('show-badge');
+      }
 
       // Section entrances: each [data-rise] element rises once as it enters the screen.
       document.querySelectorAll('.prose > *').forEach((el, i) => {
