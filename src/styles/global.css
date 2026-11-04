@@ -406,6 +406,7 @@ section[id] { scroll-margin-top: 72px; }
 .prose strong { font-weight: 600; color: #fff; }
 .prose a { text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: .2em; }
 .prose img { width: 100%; max-width: 560px; }
+.post .prose img { max-width: 100%; }
 .prose code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: .86em; background: var(--surface); padding: .1em .35em; overflow-wrap: anywhere; }
 .prose pre { background: var(--surface); padding: 20px; overflow-x: auto; }
 .prose pre code { background: none; padding: 0; }
